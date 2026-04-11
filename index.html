@@ -217,9 +217,14 @@
     <div class="form-group">
       <label>เลข HN <span class="required">*</span></label>
       <input type="text" id="hn"
-             placeholder="เช่น 123456"
-             inputmode="numeric">
-      <p class="hint">เลขประจำตัวผู้ป่วยในบัตรนัด</p>
+             placeholder="เช่น 152/56 หรือ 57864/80"
+             inputmode="text"
+             maxlength="10"
+             oninput="formatHN(this)">
+      <p class="hint">กรอกตัวเลข 1-5 หลัก / ตัวเลข 2 หลัง เช่น 10/69, 152/56, 57864/80</p>
+      <p class="hint" id="hn-error" style="color:#e53935;display:none">
+        รูปแบบไม่ถูกต้อง — ตัวอย่างที่ถูก: 10/69 หรือ 57864/80
+      </p>
     </div>
 
     <div class="form-group">
@@ -334,9 +339,18 @@ function submitForm() {
     errors.push('นามสกุล');
     document.getElementById('lastName').classList.add('is-error');
   }
+  var hnPattern = /^\d{1,5}\/\d{2}$/;
+  var hnError = document.getElementById('hn-error');
   if (!hn) {
     errors.push('เลข HN');
     document.getElementById('hn').classList.add('is-error');
+    hnError.style.display = 'none';
+  } else if (!hnPattern.test(hn)) {
+    document.getElementById('hn').classList.add('is-error');
+    hnError.style.display = 'block';
+    return;
+  } else {
+    hnError.style.display = 'none';
   }
 
   if (errors.length > 0) {
@@ -378,6 +392,47 @@ function submitForm() {
     btn.disabled    = false;
     btn.textContent = '✅ ลงทะเบียน';
   });
+}
+ // ── Format HN อัตโนมัติ ──
+function formatHN(input) {
+  // เอาเฉพาะตัวเลขและ /
+  var val = input.value.replace(/[^\d\/]/g, '');
+
+  // ใส่ / อัตโนมัติหลังตัวเลขหน้า ถ้ากรอกครบแล้วยังไม่มี /
+  var parts = val.split('/');
+
+  // ไม่ให้มี / มากกว่า 1 ตัว
+  if (parts.length > 2) {
+    val = parts[0] + '/' + parts.slice(1).join('');
+  }
+
+  // จำกัดหน้า / ไม่เกิน 5 หลัก
+  if (parts[0] && parts[0].length > 5) {
+    parts[0] = parts[0].slice(0, 5);
+    val = parts.length > 1
+      ? parts[0] + '/' + parts[1]
+      : parts[0];
+  }
+
+  // จำกัดหลัง / ไม่เกิน 2 หลัก
+  if (parts.length === 2 && parts[1].length > 2) {
+    val = parts[0] + '/' + parts[1].slice(0, 2);
+  }
+
+  input.value = val;
+
+  // แสดง/ซ่อน error แบบ real-time
+  var hnPattern = /^\d{1,5}\/\d{2}$/;
+  var hnError   = document.getElementById('hn-error');
+  var filled    = val.length > 0;
+
+  if (filled && !hnPattern.test(val)) {
+    hnError.style.display = 'block';
+    input.classList.add('is-error');
+  } else {
+    hnError.style.display = 'none';
+    input.classList.remove('is-error');
+  }
 }
 </script>
 </body>
