@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>กรอกวันนัดครั้งถัดไป</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: linear-gradient(160deg, #e3f2fd 0%, #ede7f6 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 24px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  }
+
+  .header { text-align: center; margin-bottom: 28px; }
+  .header .icon { font-size: 52px; line-height: 1; }
+  .header h2 { color: #1565c0; font-size: 20px; margin: 10px 0 4px; }
+  .header p  { color: #888; font-size: 14px; }
+
+  .form-group { margin-bottom: 20px; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 8px;
+  }
+
+  input[type="date"] {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'Sarabun', sans-serif;
+    background: #fafafa;
+    transition: border 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    color: #333;
+  }
+
+  input[type="date"]:focus {
+    outline: none;
+    border-color: #1565c0;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(21,101,192,0.10);
+  }
+
+  input[type="date"].is-error { border-color: #e53935; }
+
+  .date-preview {
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: #e3f2fd;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1565c0;
+    font-weight: 600;
+    display: none;
+    text-align: center;
+  }
+
+  .hint { font-size: 12px; color: #aaa; margin-top: 6px; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 20px 0 16px;
+  }
+
+  .or-label {
+    text-align: center;
+    font-size: 13px;
+    color: #bbb;
+    margin: 14px 0;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Sarabun', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary {
+    background: #1565c0;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .btn-primary:hover    { background: #0d47a1; transform: translateY(-1px); }
+  .btn-primary:active   { transform: translateY(0); }
+  .btn-primary:disabled {
+    background: #bbdefb;
+    color: #90caf9;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-secondary {
+    background: #fff;
+    color: #e53935;
+    border: 1.5px solid #e53935;
+  }
+
+  .btn-secondary:hover  { background: #ffebee; }
+  .btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .alert {
+    display: none;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+
+  .alert.error {
+    display: block;
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+  }
+
+  /* Loading */
+  #screen-loading {
+    text-align: center;
+    padding: 48px 0;
+  }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #1565c0;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #screen-loading p { color: #888; font-size: 15px; }
+
+  /* Success */
+  #screen-success, #screen-no-appt {
+    display: none;
+    text-align: center;
+    padding: 24px 0;
+  }
+
+  .big-icon { font-size: 72px; line-height: 1; }
+
+  #screen-success h3 { color: #1565c0; font-size: 22px; margin: 16px 0 10px; }
+  #screen-no-appt h3 { color: #555;    font-size: 22px; margin: 16px 0 10px; }
+
+  .confirm-date-box {
+    background: #e3f2fd;
+    border-radius: 14px;
+    padding: 16px;
+    margin: 16px 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1565c0;
+    line-height: 1.6;
+  }
+
+  .close-note {
+    color: #bbb;
+    font-size: 13px;
+    margin-top: 16px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- Loading -->
+  <div id="screen-loading">
+    <div class="spinner"></div>
+    <p>กำลังโหลด...<br>กรุณารอสักครู่ค่ะ</p>
+  </div>
+
+  <!-- ฟอร์มกรอกวันนัด -->
+  <div id="screen-form" style="display:none">
+    <div class="header">
+      <div class="icon">📅</div>
+      <h2>วันนัดครั้งถัดไป</h2>
+      <p>กรุณากรอกวันที่แพทย์นัดครั้งถัดไปค่ะ</p>
+    </div>
+
+    <div class="form-group">
+      <label>📅 วันที่นัดพบแพทย์ครั้งถัดไป</label>
+      <input type="date" id="nextDate"
+             onchange="onDateChange(this.value)">
+      <div class="date-preview" id="datePreview">—</div>
+      <p class="hint">เลือกวันตามบัตรนัดของคุณค่ะ</p>
+    </div>
+
+    <hr class="divider">
+
+    <button class="btn btn-primary"
+            id="btnConfirm"
+            onclick="submitDate()">
+      ✅ ยืนยันวันนัด
+    </button>
+
+    <div class="or-label">— หรือ —</div>
+
+    <button class="btn btn-secondary"
+            id="btnNoAppt"
+            onclick="submitNoAppt()">
+      ❌ แพทย์ไม่นัดครั้งถัดไป
+    </button>
+
+    <div class="alert" id="alertBox"></div>
+  </div>
+
+  <!-- สำเร็จ: บันทึกวันนัด -->
+  <div id="screen-success">
+    <div class="big-icon">✅</div>
+    <h3>บันทึกวันนัดสำเร็จค่ะ!</h3>
+    <div class="confirm-date-box" id="confirmedDateBox">—</div>
+    <p style="color:#666;font-size:14px;line-height:1.8">
+      ระบบจะแจ้งเตือนล่วงหน้า<br>
+      <strong>7 วัน</strong> และ <strong>3 วัน</strong>
+      ก่อนวันนัดค่ะ 🔔
+    </p>
+    <p class="close-note">หน้าต่างจะปิดใน 3 วินาที...</p>
+  </div>
+
+  <!-- สำเร็จ: แพทย์ไม่นัด -->
+  <div id="screen-no-appt">
+    <div class="big-icon">👍</div>
+    <h3>รับทราบแล้วค่ะ</h3>
+    <p style="color:#666;font-size:14px;line-height:1.8">
+      บันทึกว่าแพทย์ไม่ได้นัดครั้งถัดไปแล้วนะคะ<br>
+      หากมีข้อสงสัยติดต่อพยาบาลได้เลยค่ะ 🙏
+    </p>
+    <p class="close-note">หน้าต่างจะปิดใน 3 วินาที...</p>
+  </div>
+
+</div><!-- /card -->
+
+<script>
+// ================================================
+// ⚙️ ตั้งค่าตรงนี้ — แก้ 2 ค่านี้
+// ================================================
+var LIFF_ID    = 'ใส่ LIFF ID ของหน้านี้ตรงนี้';
+var SCRIPT_URL = 'ใส่ Web App URL จาก Apps Script ตรงนี้';
+// ================================================
+
+var lineUserId = '';
+var rowIndex   = '';
+
+// ── ตั้งค่า min date = พรุ่งนี้ ──
+var tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate() + 1);
+document.getElementById('nextDate').min =
+  tomorrow.toISOString().split('T')[0];
+
+// ── รับ parameter จาก URL ──
+var urlParams = new URLSearchParams(window.location.search);
+rowIndex = urlParams.get('row') || '';
+
+// ── แปลงวันที่เป็นปฏิทินไทย ──
+function toThaiDate(dateStr) {
+  if (!dateStr) return '';
+  var d = new Date(dateStr + 'T00:00:00');
+  var thaiMonths = [
+    'มกราคม','กุมภาพันธ์','มีนาคม','เมษายน',
+    'พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม',
+    'กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'
+  ];
+  var thaiDays = [
+    'อาทิตย์','จันทร์','อังคาร','พุธ',
+    'พฤหัสบดี','ศุกร์','เสาร์'
+  ];
+  var day     = d.getDate();
+  var month   = thaiMonths[d.getMonth()];
+  var year    = d.getFullYear() + 543;
+  var weekday = thaiDays[d.getDay()];
+  return 'วัน' + weekday + 'ที่ ' + day + ' ' + month + ' พ.ศ.' + year;
+}
+
+// ── แสดงหน้า ──
+function showScreen(name) {
+  ['screen-loading','screen-form','screen-success','screen-no-appt']
+    .forEach(function(id) {
+      document.getElementById(id).style.display =
+        (id === 'screen-' + name) ? 'block' : 'none';
+    });
+}
+
+function showAlert(msg) {
+  var box = document.getElementById('alertBox');
+  box.className   = 'alert error';
+  box.textContent = msg;
+}
+
+function clearAlert() {
+  var box = document.getElementById('alertBox');
+  box.className   = 'alert';
+  box.textContent = '';
+}
+
+// ── Preview วันที่ไทย ──
+function onDateChange(val) {
+  clearAlert();
+  var preview = document.getElementById('datePreview');
+  var input   = document.getElementById('nextDate');
+  input.classList.remove('is-error');
+
+  if (val) {
+    preview.style.display  = 'block';
+    preview.textContent    = '📅 ' + toThaiDate(val);
+  } else {
+    preview.style.display  = 'none';
+  }
+}
+
+// ── เริ่มต้น LIFF ──
+liff.init({ liffId: LIFF_ID })
+  .then(function() {
+    if (!liff.isLoggedIn()) { liff.login(); return; }
+    return liff.getProfile();
+  })
+  .then(function(profile) {
+    if (!profile) return;
+    lineUserId = profile.userId;
+    showScreen('form');
+  })
+  .catch(function() {
+    // ทดสอบนอก LINE
+    lineUserId = urlParams.get('userId') || 'TEST_' + Date.now();
+    showScreen('form');
+  });
+
+// ── ยืนยันวันนัด ──
+function submitDate() {
+  clearAlert();
+  var nextDate    = document.getElementById('nextDate').value;
+  var btnConfirm  = document.getElementById('btnConfirm');
+  var btnNoAppt   = document.getElementById('btnNoAppt');
+
+  if (!nextDate) {
+    document.getElementById('nextDate').classList.add('is-error');
+    showAlert('❌ กรุณาเลือกวันนัดด้วยค่ะ');
+    return;
+  }
+
+  btnConfirm.disabled    = true;
+  btnConfirm.textContent = '⏳ กำลังบันทึก...';
+  btnNoAppt.disabled     = true;
+
+  fetch(SCRIPT_URL, {
+    method   : 'POST',
+    redirect : 'follow',
+    body     : JSON.stringify({
+      action       : 'saveNextAppointment',
+      line_user_id : lineUserId,
+      row          : rowIndex,
+      nextDate     : nextDate
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.status === 'success') {
+      document.getElementById('confirmedDateBox').textContent =
+        toThaiDate(nextDate);
+      showScreen('success');
+      setTimeout(function() {
+        try { liff.closeWindow(); } catch(e) {}
+      }, 3000);
+    } else {
+      throw new Error(data.message || 'error');
+    }
+  })
+  .catch(function() {
+    showAlert('❌ บันทึกไม่สำเร็จ กรุณาลองใหม่ค่ะ');
+    btnConfirm.disabled    = false;
+    btnConfirm.textContent = '✅ ยืนยันวันนัด';
+    btnNoAppt.disabled     = false;
+  });
+}
+
+// ── แพทย์ไม่นัด ──
+function submitNoAppt() {
+  var btnConfirm = document.getElementById('btnConfirm');
+  var btnNoAppt  = document.getElementById('btnNoAppt');
+
+  btnNoAppt.disabled     = true;
+  btnNoAppt.textContent  = '⏳ กำลังบันทึก...';
+  btnConfirm.disabled    = true;
+
+  fetch(SCRIPT_URL, {
+    method   : 'POST',
+    redirect : 'follow',
+    body     : JSON.stringify({
+      action       : 'noAppointment',
+      line_user_id : lineUserId,
+      row          : rowIndex
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function() {
+    showScreen('no-appt');
+    setTimeout(function() {
+      try { liff.closeWindow(); } catch(e) {}
+    }, 3000);
+  })
+  .catch(function() {
+    showAlert('❌ บันทึกไม่สำเร็จ กรุณาลองใหม่ค่ะ');
+    btnNoAppt.disabled     = false;
+    btnNoAppt.textContent  = '❌ แพทย์ไม่นัดครั้งถัดไป';
+    btnConfirm.disabled    = false;
+  });
+}
+</script>
+</body>
+</html>
