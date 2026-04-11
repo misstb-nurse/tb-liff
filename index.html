@@ -1,373 +1,384 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ลงทะเบียนผู้ป่วยวัณโรค</title>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body { 
-      font-family: 'Sarabun', sans-serif; 
-      background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-    
-    .card {
-      background: white;
-      border-radius: 20px;
-      padding: 32px 28px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-    }
-    
-    .header {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-    
-    .header .icon { font-size: 52px; }
-    
-    .header h2 {
-      color: #1a7a1a;
-      font-size: 20px;
-      margin: 8px 0 4px;
-    }
-    
-    .header p {
-      color: #888;
-      font-size: 14px;
-    }
-    
-    .form-group {
-      margin-bottom: 18px;
-    }
-    
-    label {
-      display: block;
-      font-size: 14px;
-      color: #444;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    
-    .required { color: #e53e3e; }
-    
-    input {
-      width: 100%;
-      padding: 13px 16px;
-      border: 1.5px solid #e0e0e0;
-      border-radius: 12px;
-      font-size: 15px;
-      font-family: 'Sarabun', sans-serif;
-      transition: all 0.2s;
-      background: #fafafa;
-    }
-    
-    input:focus {
-      outline: none;
-      border-color: #00B900;
-      background: white;
-      box-shadow: 0 0 0 3px rgba(0,185,0,0.1);
-    }
-    
-    input.error-field {
-      border-color: #e53e3e;
-    }
-    
-    .hint {
-      font-size: 12px;
-      color: #999;
-      margin-top: 4px;
-    }
-    
-    .btn-submit {
-      width: 100%;
-      padding: 15px;
-      background: #00B900;
-      color: white;
-      border: none;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 700;
-      font-family: 'Sarabun', sans-serif;
-      cursor: pointer;
-      margin-top: 8px;
-      transition: all 0.2s;
-      letter-spacing: 0.5px;
-    }
-    
-    .btn-submit:hover { background: #009900; transform: translateY(-1px); }
-    .btn-submit:active { transform: translateY(0); }
-    .btn-submit:disabled { background: #ccc; cursor: not-allowed; transform: none; }
-    
-    .status-msg {
-      text-align: center;
-      margin-top: 16px;
-      font-size: 14px;
-      padding: 12px;
-      border-radius: 10px;
-      display: none;
-    }
-    
-    .status-msg.success {
-      background: #f0fff0;
-      color: #1a7a1a;
-      border: 1px solid #c3e6c3;
-      display: block;
-    }
-    
-    .status-msg.error {
-      background: #fff5f5;
-      color: #c53030;
-      border: 1px solid #fed7d7;
-      display: block;
-    }
-    
-    #loading-screen {
-      text-align: center;
-      padding: 40px 20px;
-    }
-    
-    #loading-screen .spinner {
-      font-size: 40px;
-      animation: spin 1s linear infinite;
-      display: inline-block;
-    }
-    
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    
-    #loading-screen p {
-      color: #666;
-      margin-top: 16px;
-      font-size: 15px;
-    }
-    
-    .success-screen {
-      text-align: center;
-      padding: 20px;
-      display: none;
-    }
-    
-    .success-screen .big-icon { font-size: 64px; }
-    
-    .success-screen h3 {
-      color: #1a7a1a;
-      font-size: 20px;
-      margin: 16px 0 8px;
-    }
-    
-    .success-screen p {
-      color: #666;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    
-    .divider {
-      border: none;
-      border-top: 1px solid #f0f0f0;
-      margin: 20px 0;
-    }
-    
-    .user-id-badge {
-      background: #f5f5f5;
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 11px;
-      color: #999;
-      text-align: center;
-      margin-top: 16px;
-      word-break: break-all;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ลงทะเบียนผู้ป่วยวัณโรค</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: linear-gradient(160deg, #e8f5e9 0%, #f1f8e9 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px 16px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 24px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+  }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 28px; }
+  .header .icon { font-size: 52px; line-height: 1; }
+  .header h2 { color: #2e7d32; font-size: 20px; margin: 10px 0 4px; }
+  .header p  { color: #888; font-size: 14px; }
+
+  /* Form */
+  .form-group { margin-bottom: 18px; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+  }
+
+  .required { color: #e53935; margin-left: 2px; }
+
+  input {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'Sarabun', sans-serif;
+    background: #fafafa;
+    transition: border 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #43a047;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(67,160,71,0.12);
+  }
+
+  input.is-error { border-color: #e53935; }
+
+  .hint {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 5px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 22px 0 18px;
+  }
+
+  /* Button */
+  .btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Sarabun', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary {
+    background: #43a047;
+    color: #fff;
+  }
+
+  .btn-primary:hover   { background: #388e3c; transform: translateY(-1px); }
+  .btn-primary:active  { transform: translateY(0); }
+  .btn-primary:disabled {
+    background: #c8e6c9;
+    color: #aaa;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Alert */
+  .alert {
+    display: none;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+
+  .alert.error {
+    display: block;
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+  }
+
+  .alert.success {
+    display: block;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+  }
+
+  /* Loading screen */
+  #screen-loading {
+    text-align: center;
+    padding: 48px 0;
+  }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #43a047;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #screen-loading p { color: #888; font-size: 15px; }
+
+  /* Success screen */
+  #screen-success {
+    display: none;
+    text-align: center;
+    padding: 24px 0;
+  }
+
+  #screen-success .big-icon { font-size: 72px; line-height: 1; }
+
+  #screen-success h3 {
+    color: #2e7d32;
+    font-size: 22px;
+    margin: 16px 0 10px;
+  }
+
+  #screen-success p {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .user-badge {
+    margin-top: 20px;
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    font-size: 11px;
+    color: #bbb;
+    word-break: break-all;
+  }
+</style>
 </head>
 <body>
-
 <div class="card">
 
   <!-- หน้า Loading -->
-  <div id="loading-screen">
-    <div class="spinner">⏳</div>
+  <div id="screen-loading">
+    <div class="spinner"></div>
     <p>กำลังเชื่อมต่อ LINE...<br>กรุณารอสักครู่ค่ะ</p>
   </div>
 
-  <!-- หน้าฟอร์มลงทะเบียน -->
-  <div id="form-screen" style="display:none">
+  <!-- หน้าฟอร์ม -->
+  <div id="screen-form" style="display:none">
     <div class="header">
       <div class="icon">🏥</div>
       <h2>ลงทะเบียนผู้ป่วยวัณโรค</h2>
-      <p>กรอกข้อมูลให้ครบถ้วนเพื่อรับการแจ้งเตือนนัด</p>
+      <p>กรอกข้อมูลให้ครบเพื่อรับการแจ้งเตือนนัดค่ะ</p>
     </div>
 
     <div class="form-group">
       <label>ชื่อ <span class="required">*</span></label>
-      <input type="text" id="firstName" placeholder="ชื่อ (ไม่ต้องมีคำนำหน้า)">
+      <input type="text" id="firstName"
+             placeholder="ชื่อ (ไม่ต้องมีคำนำหน้า)"
+             autocomplete="given-name">
     </div>
 
     <div class="form-group">
       <label>นามสกุล <span class="required">*</span></label>
-      <input type="text" id="lastName" placeholder="นามสกุล">
+      <input type="text" id="lastName"
+             placeholder="นามสกุล"
+             autocomplete="family-name">
     </div>
 
     <div class="form-group">
       <label>เลข HN <span class="required">*</span></label>
-      <input type="text" id="hn" placeholder="เช่น 123456">
-      <p class="hint">เลขประจำตัวผู้ป่วยที่ระบุในบัตร</p>
+      <input type="text" id="hn"
+             placeholder="เช่น 123456"
+             inputmode="numeric">
+      <p class="hint">เลขประจำตัวผู้ป่วยในบัตรนัด</p>
     </div>
 
     <div class="form-group">
       <label>เบอร์โทรศัพท์</label>
-      <input type="tel" id="phone" placeholder="0XX-XXXXXXX">
+      <input type="tel" id="phone"
+             placeholder="0XX-XXXXXXX"
+             inputmode="tel">
     </div>
 
     <hr class="divider">
 
-    <button class="btn-submit" id="submitBtn" onclick="submitForm()">
+    <button class="btn btn-primary" id="btnSubmit" onclick="submitForm()">
       ✅ ลงทะเบียน
     </button>
 
-    <div class="status-msg" id="statusMsg"></div>
-
-    <div class="user-id-badge" id="userIdBadge"></div>
+    <div class="alert" id="alertBox"></div>
+    <div class="user-badge" id="userBadge"></div>
   </div>
 
   <!-- หน้าสำเร็จ -->
-  <div class="success-screen" id="success-screen">
+  <div id="screen-success">
     <div class="big-icon">🎉</div>
     <h3>ลงทะเบียนสำเร็จแล้วค่ะ!</h3>
-    <p>ระบบจะแจ้งเตือนวันนัดพบแพทย์<br>ล่วงหน้า 7 วัน และ 3 วัน<br>ผ่านทาง LINE นี้ค่ะ</p>
-    <br>
-    <p style="color:#aaa; font-size:13px">หน้าต่างจะปิดอัตโนมัติใน 3 วินาที...</p>
+    <p>
+      ระบบจะส่งแจ้งเตือนวันนัดพบแพทย์<br>
+      ล่วงหน้า <strong>7 วัน</strong> และ <strong>3 วัน</strong><br>
+      ผ่านทาง LINE นี้ค่ะ 💊
+    </p>
+    <p style="color:#aaa;font-size:13px;margin-top:16px">
+      หน้าต่างจะปิดอัตโนมัติใน 3 วินาที...
+    </p>
   </div>
 
-</div>
+</div><!-- /card -->
 
 <script>
-  // ============================================
-  // ⚙️ ตั้งค่าตรงนี้ — แก้ 2 ค่านี้
-  // ============================================
-  const LIFF_ID     = '2009770344-ctwQ1Mss';
-  const SCRIPT_URL  = 'https://script.google.com/macros/s/AKfycbwH5T9iFsFCyW5TUqdz7Z8PQO5JkNG3AUZ4yLSH_RoxS7b18Flanvr4E75_cAy3OYcW5w/exec';
-  // ============================================
+// ================================================
+// ⚙️ ตั้งค่าตรงนี้ — แก้ 2 ค่านี้
+// ================================================
+var LIFF_ID    = 'ใส่ LIFF ID ตรงนี้';
+var SCRIPT_URL = 'ใส่ Web App URL จาก Apps Script ตรงนี้';
+// ================================================
 
-  let lineUserId = '';
+var lineUserId = '';
 
-  // เริ่มต้น LIFF
-  liff.init({ liffId: LIFF_ID })
-    .then(() => {
-      if (!liff.isLoggedIn()) {
-        liff.login(); // redirect ให้ล็อกอิน LINE ก่อน
-        return;
-      }
-      return liff.getProfile();
-    })
-    .then(profile => {
-      if (!profile) return;
-      lineUserId = profile.userId;
+function showScreen(name) {
+  var screens = ['screen-loading', 'screen-form', 'screen-success'];
+  screens.forEach(function(id) {
+    document.getElementById(id).style.display =
+      (id === 'screen-' + name) ? 'block' : 'none';
+  });
+}
 
-      // แสดง User ID ด้านล่างฟอร์ม (เพื่อยืนยัน)
-      document.getElementById('userIdBadge').textContent = 
-        'LINE ID: ' + lineUserId;
+function showAlert(type, msg) {
+  var box = document.getElementById('alertBox');
+  box.className = 'alert ' + type;
+  box.textContent = msg;
+}
 
-      // ซ่อน loading แสดงฟอร์ม
-      document.getElementById('loading-screen').style.display = 'none';
-      document.getElementById('form-screen').style.display = 'block';
-    })
-    .catch(err => {
-      // กรณีทดสอบนอก LINE Browser
-      lineUserId = 'TEST_' + Date.now();
-      document.getElementById('loading-screen').style.display = 'none';
-      document.getElementById('form-screen').style.display = 'block';
-      document.getElementById('userIdBadge').textContent = 
-        '⚠️ ทดสอบ (ไม่ใช่ LINE Browser): ' + lineUserId;
-    });
+function clearAlert() {
+  var box = document.getElementById('alertBox');
+  box.className = 'alert';
+  box.textContent = '';
+}
 
-  // ============================================
-  // ฟังก์ชันส่งข้อมูล
-  // ============================================
-  function submitForm() {
-    const firstName = document.getElementById('firstName').value.trim();
-    const lastName  = document.getElementById('lastName').value.trim();
-    const hn        = document.getElementById('hn').value.trim();
-    const phone     = document.getElementById('phone').value.trim();
-    const statusMsg = document.getElementById('statusMsg');
-    const submitBtn = document.getElementById('submitBtn');
-
-    // เคลียร์ error เก่า
-    statusMsg.className = 'status-msg';
-    statusMsg.textContent = '';
-    ['firstName','lastName','hn'].forEach(id => {
-      document.getElementById(id).classList.remove('error-field');
-    });
-
-    // ตรวจสอบข้อมูล
-    let hasError = false;
-    if (!firstName) { 
-      document.getElementById('firstName').classList.add('error-field'); 
-      hasError = true; 
-    }
-    if (!lastName) { 
-      document.getElementById('lastName').classList.add('error-field'); 
-      hasError = true; 
-    }
-    if (!hn) { 
-      document.getElementById('hn').classList.add('error-field'); 
-      hasError = true; 
-    }
-
-    if (hasError) {
-      statusMsg.className = 'status-msg error';
-      statusMsg.textContent = '❌ กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบค่ะ';
+// ── เริ่มต้น LIFF ──
+liff.init({ liffId: LIFF_ID })
+  .then(function() {
+    if (!liff.isLoggedIn()) {
+      liff.login();
       return;
     }
+    return liff.getProfile();
+  })
+  .then(function(profile) {
+    if (!profile) return;
+    lineUserId = profile.userId;
+    document.getElementById('userBadge').textContent =
+      'LINE ID: ' + lineUserId;
+    showScreen('form');
+  })
+  .catch(function(err) {
+    // ทดสอบนอก LINE Browser
+    lineUserId = 'TEST_' + Date.now();
+    document.getElementById('userBadge').textContent =
+      '⚠️ ทดสอบ: ' + lineUserId;
+    showScreen('form');
+  });
 
-    // กำลังส่งข้อมูล
-    submitBtn.disabled = true;
-    submitBtn.textContent = '⏳ กำลังบันทึก...';
+// ── ส่งฟอร์ม ──
+function submitForm() {
+  clearAlert();
 
-    const payload = {
-      line_user_id : lineUserId,
-      firstName    : firstName,
-      lastName     : lastName,
-      hn           : hn,
-      phone        : phone
-    };
+  var firstName = document.getElementById('firstName').value.trim();
+  var lastName  = document.getElementById('lastName').value.trim();
+  var hn        = document.getElementById('hn').value.trim();
+  var phone     = document.getElementById('phone').value.trim();
+  var btn       = document.getElementById('btnSubmit');
 
-    fetch(SCRIPT_URL, {
-      method  : 'POST',
-      body    : JSON.stringify(payload)
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.status === 'success') {
-        // แสดงหน้าสำเร็จ
-        document.getElementById('form-screen').style.display = 'none';
-        document.getElementById('success-screen').style.display = 'block';
-        // ปิดหน้าต่างหลัง 3 วินาที
-        setTimeout(() => {
-          try { liff.closeWindow(); } catch(e) {}
-        }, 3000);
-      } else {
-        throw new Error(data.message || 'เกิดข้อผิดพลาด');
-      }
-    })
-    .catch(err => {
-      statusMsg.className = 'status-msg error';
-      statusMsg.textContent = '❌ บันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ';
-      submitBtn.disabled = false;
-      submitBtn.textContent = '✅ ลงทะเบียน';
-    });
+  // Reset error style
+  ['firstName','lastName','hn'].forEach(function(id) {
+    document.getElementById(id).classList.remove('is-error');
+  });
+
+  // Validate
+  var errors = [];
+  if (!firstName) {
+    errors.push('ชื่อ');
+    document.getElementById('firstName').classList.add('is-error');
   }
-</script>
+  if (!lastName) {
+    errors.push('นามสกุล');
+    document.getElementById('lastName').classList.add('is-error');
+  }
+  if (!hn) {
+    errors.push('เลข HN');
+    document.getElementById('hn').classList.add('is-error');
+  }
 
+  if (errors.length > 0) {
+    showAlert('error', '❌ กรุณากรอก: ' + errors.join(', '));
+    return;
+  }
+
+  // Loading state
+  btn.disabled    = true;
+  btn.textContent = '⏳ กำลังบันทึก...';
+
+  var payload = {
+    action       : 'register',
+    line_user_id : lineUserId,
+    firstName    : firstName,
+    lastName     : lastName,
+    hn           : hn,
+    phone        : phone
+  };
+
+  fetch(SCRIPT_URL, {
+    method      : 'POST',
+    redirect    : 'follow',
+    body        : JSON.stringify(payload)
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.status === 'success') {
+      showScreen('success');
+      setTimeout(function() {
+        try { liff.closeWindow(); } catch(e) {}
+      }, 3000);
+    } else {
+      throw new Error(data.message || 'เกิดข้อผิดพลาด');
+    }
+  })
+  .catch(function(err) {
+    showAlert('error', '❌ บันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ');
+    btn.disabled    = false;
+    btn.textContent = '✅ ลงทะเบียน';
+  });
+}
+</script>
 </body>
 </html>
