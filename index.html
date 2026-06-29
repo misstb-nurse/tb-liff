@@ -265,7 +265,7 @@
 // ⚙️ ตั้งค่าตรงนี้ — แก้ 2 ค่านี้
 // ================================================
 var LIFF_ID    = '2009770344-ctwQ1Mss';
-var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwy8q17Q5-sZGGlJ6N9w53l6TTKG_kV_Ji44gkvLUjV8YvC2LjD97QpPFI0F5IKpE5mow/exec';
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJgGNGo4loObHFKcVNM3jCAkozDRKhBb8YzhKSqzXP__IGLCajMLhoFNUIn2UyZJ8/exec';
 // ================================================
 
 var lineUserId = '';
@@ -291,37 +291,15 @@ function clearAlert() {
 }
 
 // ── เริ่มต้น LIFF ──
-// ── เริ่มต้น LIFF ──
-function updateLoadingMsg(msg) {
-  var el = document.querySelector('#screen-loading p');
-  if (el) el.innerHTML = msg;
-}
-
-updateLoadingMsg('Step 1: เริ่ม liff.init...');
-
-// *** Timeout บังคับ — ถ้าค้างเกิน 8 วินาที ให้โชว์ error ***
-var liffTimeout = setTimeout(function() {
-  updateLoadingMsg(
-    '<b style="color:#c62828">⏱️ Timeout: liff.init ค้างเกิน 8 วิ</b><br>' +
-    'LIFF_ID: ' + LIFF_ID + '<br>' +
-    'liff object: ' + (typeof liff) + '<br>' +
-    'liff.id (ถ้ามี): ' + (typeof liff !== 'undefined' && liff.id ? liff.id : 'undefined')
-  );
-}, 8000);
-
 liff.init({ liffId: LIFF_ID })
   .then(function() {
-    updateLoadingMsg('Step 2: liff.init สำเร็จ, isLoggedIn = ' + liff.isLoggedIn());
     if (!liff.isLoggedIn()) {
-      updateLoadingMsg('Step 2b: กำลัง liff.login()...');
       liff.login();
       return;
     }
-    updateLoadingMsg('Step 3: กำลังดึง profile...');
     return liff.getProfile();
   })
   .then(function(profile) {
-    clearTimeout(liffTimeout);
     if (!profile) return;
     lineUserId = profile.userId;
     document.getElementById('userBadge').textContent =
@@ -329,13 +307,13 @@ liff.init({ liffId: LIFF_ID })
     showScreen('form');
   })
   .catch(function(err) {
-    clearTimeout(liffTimeout);
-    updateLoadingMsg(
-      '<b style="color:#c62828">❌ Error:</b><br>' +
-      'code: ' + (err.code || 'N/A') + '<br>' +
-      'message: ' + (err.message || err.toString())
-    );
+    // ทดสอบนอก LINE Browser
+    lineUserId = 'TEST_' + Date.now();
+    document.getElementById('userBadge').textContent =
+      '⚠️ ทดสอบ: ' + lineUserId;
+    showScreen('form');
   });
+
 // ── ส่งฟอร์ม ──
 function submitForm() {
   clearAlert();
@@ -393,22 +371,13 @@ function submitForm() {
     phone        : phone
   };
 
-fetch(SCRIPT_URL, {
-    method  : 'POST',
-    headers : { 'Content-Type': 'text/plain;charset=utf-8' },
-    body    : JSON.stringify(payload)
+  fetch(SCRIPT_URL, {
+    method      : 'POST',
+    redirect    : 'follow',
+    body        : JSON.stringify(payload)
   })
-  .then(function(res) {
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return res.text();
-  })
-  .then(function(text) {
-    var data;
-    try {
-      data = JSON.parse(text);
-    } catch(e) {
-      throw new Error('Response ไม่ใช่ JSON: ' + text.substring(0, 150));
-    }
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
     if (data.status === 'success') {
       showScreen('success');
       setTimeout(function() {
@@ -419,11 +388,11 @@ fetch(SCRIPT_URL, {
     }
   })
   .catch(function(err) {
-    console.error('Submit error:', err);
-    showAlert('error', '❌ บันทึกไม่สำเร็จ: ' + err.message);
+    showAlert('error', '❌ บันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ');
     btn.disabled    = false;
     btn.textContent = '✅ ลงทะเบียน';
   });
+}
  // ── Format HN อัตโนมัติ ──
 function formatHN(input) {
   // เอาเฉพาะตัวเลขและ /
