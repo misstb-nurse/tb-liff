@@ -307,11 +307,13 @@ liff.init({ liffId: LIFF_ID })
     showScreen('form');
   })
   .catch(function(err) {
-    // ทดสอบนอก LINE Browser
-    lineUserId = 'TEST_' + Date.now();
-    document.getElementById('userBadge').textContent =
-      '⚠️ ทดสอบ: ' + lineUserId;
-    showScreen('form');
+    // *** แสดง error จริงบนหน้าจอ เพื่อ debug ***
+    document.getElementById('screen-loading').innerHTML =
+      '<div style="text-align:left;background:#ffebee;padding:16px;border-radius:10px;color:#c62828;font-size:13px;word-break:break-all;">' +
+      '<b>LIFF Error:</b><br>' +
+      (err.code || 'no code') + '<br>' +
+      (err.message || err.toString()) +
+      '</div>';
   });
 
 // ── ส่งฟอร์ม ──
