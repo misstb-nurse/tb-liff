@@ -265,7 +265,7 @@
 // ⚙️ ตั้งค่าตรงนี้ — แก้ 2 ค่านี้
 // ================================================
 var LIFF_ID    = '2009770344-ctwQ1Mss';
-var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwJgGNGo4loObHFKcVNM3jCAkozDRKhBb8YzhKSqzXP__IGLCajMLhoFNUIn2UyZJ8/exec';
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwy8q17Q5-sZGGlJ6N9w53l6TTKG_kV_Ji44gkvLUjV8YvC2LjD97QpPFI0F5IKpE5mow/exec';
 // ================================================
 
 var lineUserId = '';
@@ -371,13 +371,22 @@ function submitForm() {
     phone        : phone
   };
 
-  fetch(SCRIPT_URL, {
-    method      : 'POST',
-    redirect    : 'follow',
-    body        : JSON.stringify(payload)
+fetch(SCRIPT_URL, {
+    method  : 'POST',
+    headers : { 'Content-Type': 'text/plain;charset=utf-8' },
+    body    : JSON.stringify(payload)
   })
-  .then(function(res) { return res.json(); })
-  .then(function(data) {
+  .then(function(res) {
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.text();
+  })
+  .then(function(text) {
+    var data;
+    try {
+      data = JSON.parse(text);
+    } catch(e) {
+      throw new Error('Response ไม่ใช่ JSON: ' + text.substring(0, 150));
+    }
     if (data.status === 'success') {
       showScreen('success');
       setTimeout(function() {
@@ -388,11 +397,11 @@ function submitForm() {
     }
   })
   .catch(function(err) {
-    showAlert('error', '❌ บันทึกไม่สำเร็จ กรุณาลองใหม่อีกครั้งค่ะ');
+    console.error('Submit error:', err);
+    showAlert('error', '❌ บันทึกไม่สำเร็จ: ' + err.message);
     btn.disabled    = false;
     btn.textContent = '✅ ลงทะเบียน';
   });
-}
  // ── Format HN อัตโนมัติ ──
 function formatHN(input) {
   // เอาเฉพาะตัวเลขและ /
